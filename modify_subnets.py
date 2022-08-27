@@ -5,36 +5,35 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 
-AWS_REGION = input("Please enter the AWS_REGION")
+REGION = input("Please enter the REGION")
 
-# this is the configration for the logger
+# this is the configration for the logger_for
 
-logger = logging.getLogger()
+logger_for = logging.getlogger_for()
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s: %(levelname)s: %(message)s')
 
-vpc_client = boto3.client("ec2", region_name=AWS_REGION)
+client_for_subnet = boto3.client("ec2", region_name=REGION)
 
 
-def modify_subnet(subnet_id, map_public_ip_on_launch):
+def modify_subnet(subnet_id, public_ip):
 
     try:
-        response = vpc_client.modify_subnet(
-            MapPublicIpOnLaunch={'Value': map_public_ip_on_launch},
+        res = client_for_subnet.modify_subnet(
+            MapPublicIpOnLaunch={'Value': public_ip},
             SubnetId=subnet_id)
 
     except ClientError:
-        logger.exception('This can not be modify.')
+        logger_for.exception('This can not be modify.')
         raise
     else:
-        return response
+        return res
 
 
 if __name__ == '__main__':
-    # SUBNET_ID = 'subnet-071923fde0da8166e'
-    SUBNET_ID = input("Enter the subnet id")
-    MAP_PUBLIC_IP_ON_LAUNCH = True
-    subnet_attribute = modify_subnet(SUBNET_ID,MAP_PUBLIC_IP_ON_LAUNCH)
-    logger.info(
-        f'Your Subnet has been modified and new value: {MAP_PUBLIC_IP_ON_LAUNCH}'
+    ID = input("Enter the subnet id")
+    MAP_PUBLIC_IP = input("Enter your answer in True or Flase: ")
+    subnet_attribute = modify_subnet(ID,MAP_PUBLIC_IP)
+    logger_for.info(
+        f'Your Subnet has been modified and new value: {MAP_PUBLIC_IP}'
     )
